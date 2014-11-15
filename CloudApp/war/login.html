@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
+<!-- above set at the top of the file will set     -->
+<!-- the browser's rendering engine into           -->
+<!-- "Quirks Mode". Replacing this declaration     -->
+<!-- with a "Standards Mode" doctype is supported, -->
+<!-- but may lead to some differences in layout.   -->
+
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap.css" rel="stylesheet">
+<title>Hello App Engine</title>
+</head>
+
+<body>
+	
+	<br/>
+	<h1 align="center">Login </h1>
+	<br/>
+	<br/>
+	<br/>
+	<form class="form-horizontal" role="form" action="/login">
+		<div class="form-group">
+			<label for="inputEmail" class="col-sm-2 control-label">Email</label>
+			<div class="col-sm-5">
+				<input type="email" class="form-control" id="inputEmail"
+					placeholder="Email" name="email">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputPassword" class="col-sm-2 control-label">Password</label>
+			<div class="col-sm-5">
+				<input type="password" class="form-control" id="inputPassword" name="password"
+					placeholder="Password">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button type="submit" class="btn btn-primary">Log In</button>
+			</div>
+		</div>
+	</form>
+</body>
+</html>
