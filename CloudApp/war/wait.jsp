@@ -22,7 +22,7 @@
 <br>
 <h2 align="center">Wait... !!!</h2>
 <div id="mydiv">
-	<img src="ajax-loader(4).gif" alt="Waiting For Other Player" class="ajax-loader">
+	<img src="waiting.jpg" alt="Waiting For Other Player" class="ajax-loader">
 	 
 </div>
 <script>
