@@ -65,9 +65,10 @@ public class SelectTopicServlet extends HttpServlet
 			Entity user2 = new Entity("OnlineUser",email);
 			
 			user1.setProperty("topic", req.getParameter("topic"));
+			user1.setProperty("score", 0);
 
 			user2.setProperty("topic", req.getParameter("topic"));
-			
+			user2.setProperty("score", 0);
 			
 			List<Entity> questions = pq.asList(FetchOptions.Builder.withDefaults());
 			

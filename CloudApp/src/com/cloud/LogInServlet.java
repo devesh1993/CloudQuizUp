@@ -30,7 +30,6 @@ public class LogInServlet extends HttpServlet {
 		String email = req.getParameter("email");
 		String password = req.getParameter("password");
 		
-		
 		Filter EmailEntered =
 				  new FilterPredicate("email",FilterOperator.EQUAL,email);
 		Filter PasswordEntered =
@@ -39,7 +38,7 @@ public class LogInServlet extends HttpServlet {
 		
 		Query q = new Query("UserData").setFilter(Combined);
 		//List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
-		resp.getWriter().println("  "+email+ "  "+ password);
+		System.out.println(email+ "  "+ password);
 		PreparedQuery pq = datastore.prepare(q);
 		
 		System.out.println(pq.countEntities());
@@ -50,15 +49,23 @@ public class LogInServlet extends HttpServlet {
 		//System.out.println("user is "+users.get(0));
 		if(pq.countEntities() == 0)
 		{
-			resp.getWriter().write("Wrong Credentials");
+			//resp.getWriter().write("Wrong Credentials");
 			resp.sendRedirect("login.html");
 		}
 		else
 		{
-			resp.getWriter().write("Successfully Logged In !!!");
+			//resp.getWriter().write("Successfully Logged In !!!");
+			
+			Entity user = pq.asList(FetchOptions.Builder.withDefaults()).get(0);
+			String IsAdmin = (String)user.getProperty("admin");
+			
 			Cookie ck=new Cookie("email",email);//creating cookie object  
 			resp.addCookie(ck);
-			resp.sendRedirect("/home.jsp");
+			
+			if(IsAdmin.equals("1"))
+				resp.sendRedirect("admin_main.jsp?opt=0");
+			else		
+				resp.sendRedirect("/home.jsp");
 		}
 		/*
 		for (Entity result : pq.asIterable())

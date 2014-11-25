@@ -1,7 +1,8 @@
 package com.cloud;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
+import java.text.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -36,6 +37,7 @@ public class ResponseServlet extends HttpServlet
 		int qid = Integer.parseInt(req.getParameter("qid"));
 		
 		String userAns = req.getParameter("userAns");
+		String timeTaken = req.getParameter("time");
 		Filter filter1 = new FilterPredicate("player1",FilterOperator.EQUAL,email);
 		Filter filter2 = new FilterPredicate("player2",FilterOperator.EQUAL,email);
 		System.out.println("email is "+email+" qid is "+qid);
@@ -53,8 +55,13 @@ public class ResponseServlet extends HttpServlet
 			q = new Query(k);//.setFilter(new FilterPredicate("email",FilterOperator.EQUAL,email));
 			pq = datastore.prepare(q);
 			Entity user = pq.asList(FetchOptions.Builder.withDefaults()).get(0);
+			int score = Integer.parseInt(user.getProperty("score").toString());
 			
 			user.setProperty("answer"+qid, "right");
+			System.out.println("time taken "+timeTaken);
+			user.setProperty("time"+qid,timeTaken);
+			score = score + (30 - Integer.parseInt(timeTaken))*2;
+			user.setProperty("score", score);
 			datastore.put(user);
 			//pq.asList(FetchOptions.Builder.withDefaults()).get(0).setProperty("time"+qid, req.getParameter("time"));
 		}
@@ -66,6 +73,8 @@ public class ResponseServlet extends HttpServlet
 			Entity user = pq.asList(FetchOptions.Builder.withDefaults()).get(0);
 			
 			user.setProperty("answer"+qid, "wrong");
+			System.out.println("time taken "+30);
+			user.setProperty("time"+qid,30);
 			datastore.put(user);		
 		}
 		
@@ -75,8 +84,47 @@ public class ResponseServlet extends HttpServlet
 		}
 		else
 			resp.sendRedirect("quizup.jsp?qid="+ (qid+1));
-
-	
 				
+	}
+	
+	public static int getScore(String email)
+	{
+		int currScore = 0;
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		Key k = KeyFactory.createKey("OnlineUser", email);
+		Query q1 = new Query(k);
+		PreparedQuery pq1 = datastore.prepare(q1);
+
+		Entity userCond = pq1.asList(FetchOptions.Builder.withDefaults()).get(0);
+		
+		currScore = Integer.parseInt(userCond.getProperty("score").toString()); 
+		
+		return currScore;
+	}
+	
+	public static String getOpponent(String email)
+	{
+		String opponentName = "";
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Filter filter1 = new FilterPredicate("player1",FilterOperator.EQUAL,email);
+		Filter filter2 = new FilterPredicate("player2",FilterOperator.EQUAL,email);
+		
+		Query q = new Query("Match").setFilter(CompositeFilterOperator.or(filter1,filter2));
+		
+		PreparedQuery pq = datastore.prepare(q);
+		Entity pair = pq.asList(FetchOptions.Builder.withDefaults()).get(0);
+		
+		if(pair.getProperty("player1").toString().equals(email))
+		{
+			System.out.println("opponent is "+pair.getProperty("player2"));
+			opponentName = pair.getProperty("player2").toString();
+		}
+		else
+		{
+			System.out.println("opponent is "+pair.getProperty("player1"));
+			opponentName = pair.getProperty("player1").toString();
+		}
+		return opponentName;
 	}
 }

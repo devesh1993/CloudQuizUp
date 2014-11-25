@@ -11,17 +11,41 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/bootstrap.css" rel="stylesheet">
+<style>
+.abc img {
+  float: left;
+  width: 100px;
+  height: 100px;
+  background: #555;
+  margin-left:500px;
+}
+
+.abc h1 {
+  left: 10px;
+  margin-right:475px;
+}
+.abcd{
+margin-left:320px;
+}
+</style>
 <title>Hello App Engine</title>
 </head>
 
 <body>
-	
-	<br/>
-	<h1 align="center">Login </h1>
-	<br/>
-	<br/>
-	<br/>
-	<form class="form-horizontal" role="form" action="/login">
+<div class="abc">
+	 <img src="logo.jpg" style="width:50px;height:50px;"/> 
+	<h1 align="center" style="color:red">Welcome to QuizUp</h1>
+</div>
+	<nav class="navbar navbar-inverse" role="navigation">
+		<ul class="nav nav-pills" role="tablist">
+			<!--  <td><a href="./admin_module/admin_main.jsp?opt=0">Admin</a></td>-->
+			<li role="presentation" class="active"><a href="login.html">Login</a></li>
+			<li><a href="signup">SignUp</a></li>
+		</ul>
+		</nav>
+		<h3 align="center" style="color:red">Login</h3>
+		<form class="form-horizontal" role="form" action="/login">
+		<div class="abcd">
 		<div class="form-group">
 			<label for="inputEmail" class="col-sm-2 control-label">Email</label>
 			<div class="col-sm-5">
@@ -29,6 +53,8 @@
 					placeholder="Email" name="email">
 			</div>
 		</div>
+		</div>
+		<div class="abcd">
 		<div class="form-group">
 			<label for="inputPassword" class="col-sm-2 control-label">Password</label>
 			<div class="col-sm-5">
@@ -36,11 +62,13 @@
 					placeholder="Password">
 			</div>
 		</div>
-
+		</div>
+		<div class="abcd">
 		<div class="form-group">
 			<div class="col-sm-offset-2 col-sm-10">
 				<button type="submit" class="btn btn-primary">Log In</button>
 			</div>
+		</div>
 		</div>
 	</form>
 </body>

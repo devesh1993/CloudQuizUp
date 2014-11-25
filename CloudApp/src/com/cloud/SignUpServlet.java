@@ -36,7 +36,7 @@ public class SignUpServlet extends HttpServlet {
 		user.setProperty("email", email);
 		user.setProperty("password", password);
 		
-		
+		user.setProperty("admin", "0");
 		Filter EmailEntered = new FilterPredicate("email",FilterOperator.EQUAL,email);
 		Query q = new Query("UserData").setFilter(EmailEntered);
 		PreparedQuery pq = datastore.prepare(q);
@@ -54,9 +54,7 @@ public class SignUpServlet extends HttpServlet {
 		}
 		else
 		{
-			
 			datastore.put(user);
-			
 			resp.sendRedirect("login.html");
 		}
 		
