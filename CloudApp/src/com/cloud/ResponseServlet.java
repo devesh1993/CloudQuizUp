@@ -28,14 +28,17 @@ public class ResponseServlet extends HttpServlet
 	}
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)throws IOException 
 	{
+		
+		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		//checking for the answer
 		String email = getCookie(req.getCookies(),"email");
 		int qid = Integer.parseInt(req.getParameter("qid"));
+		
 		String userAns = req.getParameter("userAns");
 		Filter filter1 = new FilterPredicate("player1",FilterOperator.EQUAL,email);
 		Filter filter2 = new FilterPredicate("player2",FilterOperator.EQUAL,email);
-		
+		System.out.println("email is "+email+" qid is "+qid);
 		
 		Query q = new Query("Match").setFilter(CompositeFilterOperator.or(filter1,filter2));
 		
@@ -46,18 +49,34 @@ public class ResponseServlet extends HttpServlet
 	
 		if(answer.equals(userAns))
 		{
-			q = new Query("OnlineUser").setFilter(new FilterPredicate("email",FilterOperator.EQUAL,email));
+			Key k = KeyFactory.createKey("OnlineUser", email);
+			q = new Query(k);//.setFilter(new FilterPredicate("email",FilterOperator.EQUAL,email));
 			pq = datastore.prepare(q);
-			pq.asList(FetchOptions.Builder.withDefaults()).get(0).setProperty("answer"+qid, "right");
-			pq.asList(FetchOptions.Builder.withDefaults()).get(0).setProperty("time"+qid, req.getParameter("time"));
+			Entity user = pq.asList(FetchOptions.Builder.withDefaults()).get(0);
+			
+			user.setProperty("answer"+qid, "right");
+			datastore.put(user);
+			//pq.asList(FetchOptions.Builder.withDefaults()).get(0).setProperty("time"+qid, req.getParameter("time"));
 		}
 		else
 		{
-			q = new Query("OnlineUser").setFilter(new FilterPredicate("email",FilterOperator.EQUAL,email));
+			Key k = KeyFactory.createKey("OnlineUser", email);
+			q = new Query(k);
 			pq = datastore.prepare(q);
-			pq.asList(FetchOptions.Builder.withDefaults()).get(0).setProperty("answer"+qid, "wrong");
+			Entity user = pq.asList(FetchOptions.Builder.withDefaults()).get(0);
+			
+			user.setProperty("answer"+qid, "wrong");
+			datastore.put(user);		
 		}
 		
-		
+		if(qid==5)
+		{
+			resp.sendRedirect("result.jsp");
+		}
+		else
+			resp.sendRedirect("quizup.jsp?qid="+ (qid+1));
+
+	
+				
 	}
 }

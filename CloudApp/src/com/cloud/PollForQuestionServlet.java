@@ -2,6 +2,7 @@ package com.cloud;
 
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -33,26 +34,34 @@ public class PollForQuestionServlet extends HttpServlet
 	{
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		String email = getCookie(req.getCookies(),"email");
+		System.out.println("email is "+email);
+		
+		
+		System.out.println("inside poolforquestion");
+		
 		//polling for the other user...
 		while(true)
 		{
-			Query q = new Query(req.getParameter("topic"));
+			String topic = req.getParameter("topic");
+			System.out.println("topic : " + topic);
+			Key k = KeyFactory.createKey("AvailableTopic",topic );
+			Query q = new Query(k);
 			PreparedQuery pq = datastore.prepare(q);
+			List<Entity> questions = pq.asList(FetchOptions.Builder.withDefaults());
+			
+			System.out.println(pq.countEntities(FetchOptions.Builder.withDefaults())+"**");
+			
 			if(pq.countEntities(FetchOptions.Builder.withDefaults()) ==0)
 			{
-				
-				q = new Query("Match").setFilter(new FilterPredicate("player1",FilterOperator.EQUAL, email));
-				pq = datastore.prepare(q);
-				Entity matchedPair = pq.asList(FetchOptions.Builder.withLimit(1)).get(0);
-				EmbeddedEntity question = (EmbeddedEntity) matchedPair.getProperty("question"+req.getParameter("qid"));
-				String jsonString = (new JSONObject(question.getProperties())).toString();
-				resp.getWriter().write(jsonString);
+				System.out.println("***************************");
+				resp.sendRedirect("quizup.jsp?qid=1");
 				break;
 			}
 			try 
 			{
 				Thread.sleep(1000);
-			} catch (InterruptedException e) 
+			} 
+			catch (InterruptedException e) 
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();

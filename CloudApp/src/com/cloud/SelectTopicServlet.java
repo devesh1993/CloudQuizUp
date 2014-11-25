@@ -19,7 +19,9 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.*;
 public class SelectTopicServlet extends HttpServlet 
 {
 	private String getCookie(Cookie cookies[], String cvalue)
@@ -40,7 +42,7 @@ public class SelectTopicServlet extends HttpServlet
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		
 		String email = getCookie(req.getCookies(),"email");
-		
+		String topic = req.getParameter("topic");
 		Key k = KeyFactory.createKey("AvailableTopic",req.getParameter("topic"));
 		try 
 		{
@@ -54,7 +56,7 @@ public class SelectTopicServlet extends HttpServlet
 			
 			pair.setProperty("topic", req.getParameter("topic"));
 			
-			Query q = new Query(req.getParameter("topic"));
+			Query q = new Query("question").setFilter(new FilterPredicate("topic", FilterOperator.EQUAL, topic));
 			
 			PreparedQuery pq = datastore.prepare(q);
 			
@@ -70,23 +72,24 @@ public class SelectTopicServlet extends HttpServlet
 			List<Entity> questions = pq.asList(FetchOptions.Builder.withDefaults());
 			
 			Random rand = new Random();
-			
+			System.out.println("question for topic : " + topic +" number of questions : " + questions.size());
 			for(int i = 0 ; i < 5;  i ++)
 			{
 				int index = rand.nextInt(questions.size());
-				System.out.println(index);
+				System.out.println(i);
 				
-				System.out.println(questions.get(index).getProperty("question"));
+				System.out.println(questions.get(i).getProperty("ques"));
 				
 				EmbeddedEntity temp = new EmbeddedEntity();
 				
-				temp.setProperty("question", questions.get(index).getProperty("question"));
-				temp.setProperty("answer", questions.get(index).getProperty("answer"));
-				temp.setProperty("op1", questions.get(index).getProperty("op1"));
-				temp.setProperty("op2", questions.get(index).getProperty("op2"));
-				temp.setProperty("op3", questions.get(index).getProperty("op3"));
-				temp.setProperty("op4", questions.get(index).getProperty("op4"));
-				
+				temp.setProperty("question", questions.get(i).getProperty("ques"));
+				temp.setProperty("answer", questions.get(i).getProperty("answer"));
+				temp.setProperty("option1", questions.get(i).getProperty("option1"));
+				temp.setProperty("option2", questions.get(i).getProperty("option2"));
+				temp.setProperty("option3", questions.get(i).getProperty("option3"));
+				temp.setProperty("option4", questions.get(i).getProperty("option4"));
+				//user1.setProperty("answer"+(i+1), "");
+				//user2.setProperty("answer"+(i+1), "");
 				pair.setProperty("question"+(i+1),temp);
 			}
 			
@@ -94,9 +97,11 @@ public class SelectTopicServlet extends HttpServlet
 			
 			datastore.put(user1);
 			datastore.put(user2);
+			datastore.put(pair);
 			
-			
-			resp.sendRedirect("/quizRunning.html?qid=1");
+			Key key = KeyFactory.createKey("AvailableTopic",req.getParameter("topic") );
+			datastore.delete(key);
+			resp.sendRedirect("/quizup.jsp?qid=1");
 			
 						
 		} 
@@ -106,7 +111,9 @@ public class SelectTopicServlet extends HttpServlet
 			
 			Entity requestedTopic = new Entity("AvailableTopic",req.getParameter("topic"));
 			requestedTopic.setProperty("email", email);
-			resp.sendRedirect("/wait.jsp");
+			datastore.put(requestedTopic);
+			System.out.println("directing to wait.jsp");
+			resp.sendRedirect("/wait.jsp?topic="+req.getParameter("topic"));
 			/*
 			Query q = new Query(req.getParameter("topic"));
 			
