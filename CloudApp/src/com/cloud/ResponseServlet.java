@@ -60,7 +60,7 @@ public class ResponseServlet extends HttpServlet
 			user.setProperty("answer"+qid, "right");
 			System.out.println("time taken "+timeTaken);
 			user.setProperty("time"+qid,timeTaken);
-			score = score + (30 - Integer.parseInt(timeTaken))*2;
+			score = score + Integer.parseInt(timeTaken);
 			user.setProperty("score", score);
 			datastore.put(user);
 			//pq.asList(FetchOptions.Builder.withDefaults()).get(0).setProperty("time"+qid, req.getParameter("time"));
@@ -73,19 +73,23 @@ public class ResponseServlet extends HttpServlet
 			Entity user = pq.asList(FetchOptions.Builder.withDefaults()).get(0);
 			
 			user.setProperty("answer"+qid, "wrong");
-			System.out.println("time taken "+30);
-			user.setProperty("time"+qid,30);
+			user.setProperty("time"+qid,10);
+			int score = Integer.parseInt(user.getProperty("score").toString()) + 10;
+			user.setProperty("score", score);
 			datastore.put(user);		
 		}
 		
 		if(qid==5)
-		{
-			resp.sendRedirect("result.jsp");
+		{	
+			String opponent = getOpponent(email);
+			resp.sendRedirect("result.jsp?opponent="+opponent);
 		}
 		else
 			resp.sendRedirect("quizup.jsp?qid="+ (qid+1));
 				
 	}
+	
+	
 	
 	public static int getScore(String email)
 	{

@@ -52,7 +52,6 @@
 				String name = request.getParameter("name");
 				String emailNew = request.getParameter("email");
 				String password = request.getParameter("password");
-
 				System.out.println("Here");
 				if (new_topic == null) {
 					if (name != null && email != null && password != null) {
@@ -210,7 +209,7 @@
 	<%
 		}
 		} else {
-			response.sendRedirect("login.html");
+			response.sendRedirect("login.jsp");
 		}
 	%>
 

@@ -21,12 +21,27 @@
 Cookie cookie = null;
 Cookie[] cookies = null;
 cookies = request.getCookies();
+String email = "";
 if (cookies != null) 
 {
 	for (int i = 0; i < cookies.length; i++) {
 		cookie = cookies[i];
+		if (cookie.getName().equals("email")) {
+			email = cookie.getValue();
+		}
 		cookie.setMaxAge(0);
 	}
+}
+
+DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+Key k = KeyFactory.createKey("LoggedIn", email);
+Query q = new Query("LoggedIn",k);
+
+PreparedQuery pq = datastore.prepare(q);
+if(pq.countEntities() != 0)
+{
+	Entity e = pq.asList(FetchOptions.Builder.withDefaults()).get(0);
+	datastore.delete(e.getKey());
 }
 response.sendRedirect("index.html");
 %>

@@ -23,7 +23,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 
 @SuppressWarnings("serial")
 public class LogInServlet extends HttpServlet {
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
@@ -41,44 +41,53 @@ public class LogInServlet extends HttpServlet {
 		System.out.println(email+ "  "+ password);
 		PreparedQuery pq = datastore.prepare(q);
 		
-		System.out.println(pq.countEntities());
+		System.out.println("Pq Count " + pq.countEntities());
+		
+		Key kemail = KeyFactory.createKey("LoggedIn", email);
+		q = new Query("LoggedIn",kemail);
+		PreparedQuery pq1 = datastore.prepare(q);
+		if(pq1.countEntities() != 0 )
+		{
+			System.out.println("Pq11 inside the login redirectnt innnnn" + pq1.countEntities());
+			
+			resp.sendRedirect("login.jsp?q=SignedIn");
+			System.out.println("still in login servert..");
+		}
+		else
+		{
+			if(pq.countEntities() == 0)
+			{
+				//resp.getWriter().write("Wrong Credentials");
+				resp.sendRedirect("login.jsp?q=WrongCredentials");
+			}
+			else
+			{
+				//resp.getWriter().write("Successfully Logged In !!!");
+				
+				Entity user = pq.asList(FetchOptions.Builder.withDefaults()).get(0);
+				String IsAdmin = (String)user.getProperty("admin");
+				
+				
+				Entity user1 = new Entity("LoggedIn",email);
+				datastore.put(user1);
+				
+				Cookie ck=new Cookie("email",email);//creating cookie object  
+				resp.addCookie(ck);
+				
+				if(IsAdmin.equals("1"))
+					resp.sendRedirect("admin_main.jsp?opt=0");
+				else		
+					resp.sendRedirect("/home.jsp");
+			} 
+
+		}
+				
 		
 		
 		//Query query = new Query("userData");
 		//List<Entity> users = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
 		//System.out.println("user is "+users.get(0));
-		if(pq.countEntities() == 0)
-		{
-			//resp.getWriter().write("Wrong Credentials");
-			resp.sendRedirect("login.html");
-		}
-		else
-		{
-			//resp.getWriter().write("Successfully Logged In !!!");
-			
-			Entity user = pq.asList(FetchOptions.Builder.withDefaults()).get(0);
-			String IsAdmin = (String)user.getProperty("admin");
-			
-			Cookie ck=new Cookie("email",email);//creating cookie object  
-			resp.addCookie(ck);
-			
-			if(IsAdmin.equals("1"))
-				resp.sendRedirect("admin_main.jsp?opt=0");
-			else		
-				resp.sendRedirect("/home.jsp");
-		}
-		/*
-		for (Entity result : pq.asIterable())
-		{
-		  String nameRetrieved = (String) result.getProperty("name");
-		  String emailRetrieved = (String) result.getProperty("email");
-		  String passwordRetrieved = (String) result.getProperty("password");
-		  
-		  //datastore.delete(result.getKey());
-		  resp.getWriter().println("Here retrieved name "+nameRetrieved +" "+emailRetrieved+ "  "+ passwordRetrieved);
-		}
-		*/		
-		  
+			  
 	}
 	
 }

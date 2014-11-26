@@ -48,12 +48,9 @@ margin-left:600px;
 </div>
 <nav class="navbar navbar-inverse" role="navigation">
 		<ul class="nav nav-pills" role="tablist" >
-			<!--  <td><a href="./admin_module/admin_main.jsp?opt=0">Admin</a></td>-->
-			<!-- <li><a href="login.html">Login</a></li>
-			<li role="presentation" class="active"><a href="signup">SignUp</a></li>-->
+			<li role="presentation" class="active"><a href="logout.jsp">Logout</a></li>
 		</ul>
-		</nav>
-		
+		</nav>		
 		<h3 align="right">
 		<%
 		String email = new String();
@@ -74,7 +71,7 @@ margin-left:600px;
 		</h3>
 	<h3 align="center" style="color:red">Select Topic</h3>
 <select class="form-control" name="topic" style="margin-left:550px;width:20%;">
-		  <option>Select Topic</option>
+		  <option  value="notselected">Select Topic</option>
 		  <%
 		  	adminFunctions funcs = new adminFunctions();
 		  	ArrayList<String> allTopics = new ArrayList<String>();
@@ -85,6 +82,7 @@ margin-left:600px;
 			}
 		  %>
 		</select><br>
+	
 		<button type="submit" class="btn btn-primary" style="width:5%;margin-left:650px;">OK</button>
 </form>
 </body>

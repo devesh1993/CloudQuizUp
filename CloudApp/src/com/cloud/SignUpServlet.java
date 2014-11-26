@@ -19,7 +19,7 @@ import java.util.*;
 
 @SuppressWarnings("serial")
 public class SignUpServlet extends HttpServlet {
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
@@ -55,7 +55,7 @@ public class SignUpServlet extends HttpServlet {
 		else
 		{
 			datastore.put(user);
-			resp.sendRedirect("login.html");
+			resp.sendRedirect("login.jsp");
 		}
 		
 		resp.getWriter().println(name + "  " + email + "  " + password);

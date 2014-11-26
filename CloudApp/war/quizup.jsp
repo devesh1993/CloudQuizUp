@@ -24,50 +24,84 @@
 <link href="/css/bootstrap.min.css" rel="stylesheet">
 <link href="/css/bootstrap.css" rel="stylesheet">
 
-<div id = "waitforother"><h3>Waiting for Opponents Response...</h3></div>
+<marquee dir="ltr"><h2 id = "waitforother"></h2></marquee>
 <script>
 
-function disableBackButton()
-{
-window.history.forward()
-}  
-disableBackButton();  
-window.onload=disableBackButton();  
+	function disableBackButton()
+	{
+		window.history.forward()
+	}  
+	disableBackButton();  
+	window.onload=disableBackButton();  
 
 document.getElementById("waitforother").style.visibility="hidden";
 	var response =-1;
-	var timetaken = 30;
+	var timetaken = 10;
+	var d1 = new Date();
+	var iniMin = d1.getMinutes();
+	var iniSec = d1.getSeconds();
 	function handler()
 	{
 		window.location.assign("/response?qid="+"<%out.print(request.getParameter("qid"));%>"+"&userAns="+response+"&time="+timetaken);
 	}
 	setInterval(handler,10000);
 	
-	function chkResponse(resp, initialMin, initialSec) {
-		var min=0,timeTaken;
-		var d = new Date();
-		var currMin,currSec;
-		currMin = d.getMinutes();
-		currSec = d.getSeconds();
-		min = initialMin - currMin;
-		if(min == 0)
+	function chkResponse(resp, initialMin, initialSec,ans) {
+		if(response==-1)
 		{
-			timeTaken = currSec - initialSec;
+			var min=0,timeTaken;
+			var d = new Date();
+			var currMin,currSec;
+			currMin = d.getMinutes();
+			currSec = d.getSeconds();
+			min = currMin - iniMin;
+			if(min == 0)
+			{
+				timeTaken = currSec - iniSec;
+			}
+			else
+			{
+				timeTaken = (60-iniSec)+currSec;
+			}
+			response = resp;
+			timetaken = timeTaken;
+			document.getElementById("waitforother").style.visibility="visible";
+			document.getElementById("waitforother").innerHTML="Waiting for Opponents Response...";
+			document.getElementById("option"+resp).style.backgroundColor="orange";
+			document.getElementById("option"+ans).style.backgroundColor="green";
+			console.log("time required is "+timeTaken);			
 		}
 		else
 		{
-			timeTaken = (60-initialSec)+currSec;
+			document.getElementById("waitforother").innerHTML="Already answered question, Please wait for opponent";
 		}
-		response = resp;
-		timetaken = timeTaken;
-		document.getElementById("waitforother").style.visibility="visible";
-		document.getElementById("question").style.visibility="hidden";
-		console.log("time required is "+timeTaken);
-	
 	}
 </script>
+<style>
+.abc img {
+  float: left;
+  width: 100px;
+  height: 100px;
+  background: #555;
+  margin-left:500px;
+}
+
+.abc h1 {
+  left: 10px;
+  margin-right:675px;
+}
+</style>
 </head>
-<body>
+<body style="width:100%;height:100%;background-image:url('quizBack.png');background-repeat: no-repeat;background-position: center;">
+
+<div class="abc">
+	 <img src="QuizLogo.jpg" style="width:300px;height:100px;"/> 
+	<h1 align="center" style="color:red"></h1>
+</div>
+<br>
+<br>
+<br>
+<br>
 <div id = "question">
 	<%
 		adminFunctions funcs  = new adminFunctions();
@@ -110,42 +144,41 @@ document.getElementById("waitforother").style.visibility="hidden";
 		String opt2 = temp.getProperty("option2").toString();
 		String opt3 = temp.getProperty("option3").toString();
 		String opt4 = temp.getProperty("option4").toString();
+		int ans = Integer.parseInt(temp.getProperty("answer").toString());
 	%>
 	
-	<h3><%
-	out.println(email);
+	<h3 style="color : green;margin-left:10%;"><b><%
+	out.println(email + " :- ");
 	out.println(ResponseServlet.getScore(email));
-	%></h3>
-	<h3 align="right">Opponent <%
+	%></b></h3>
+	<h3 align="right" style="color : red;margin-right:10%;"><b>OPPONENT <%
 	String opponent = ResponseServlet.getOpponent(email); 
-	out.println(opponent);
+	out.println(opponent+ " :- ");
 	out.println(ResponseServlet.getScore(opponent));
-	%></h3>
-
-	<label name="question" class="form-control"
-		><%out.println(ques);%></label>
-	<div class="radio" onclick="chkResponse(1,<%out.print(initialMin+","+initialSec); %>)">
-		<label> <input type="radio"
-			name="option1"><%out.println(opt1);%>
-		</label>
-	</div>
-	<div class="radio" onclick="chkResponse(2,<%out.print(initialMin+","+initialSec); %>)">
-		<label> <input type="radio"
-			name="option2">
+	%></b></h3>
+	<div align="center">
+	<label name="question" style="width : 50%;height:150px;" class="form-control"
+		><h2><%out.println(ques);%></h2></label>
+	</div><br>
+	<div id = "option1" class="form-control" style="margin-left:400px;width : 40%;height:40px;" onclick="chkResponse(1,<%out.print(initialMin+","+initialSec+"," + ans); %>)" style = "background-color: silver;">
+		<h4 align = "center" style = "color:black;"><label>  
+			<%out.println(opt1);%>
+		</label></h4>
+	</div><br>
+	<div id = "option2" class="form-control" style="margin-left:400px;width : 40%;height:40px;" onclick="chkResponse(2,<%out.print(initialMin+","+initialSec+"," + ans); %>)">
+		<h4 align = "center" style = "color:black;"><label>  
 			<%out.println(opt2);%>
-		</label>
-	</div>
-	<div class="radio" onclick="chkResponse(3,<%out.print(initialMin+","+initialSec); %>)">
-		<label> <input type="radio"
-			name="option3">
+		</label></h4>
+	</div><br>
+	<div id = "option3" class="form-control" style="margin-left:400px;width : 40%;height:40px;" onclick="chkResponse(3,<%out.print(initialMin+","+initialSec+"," + ans); %>)">
+		<h4 align = "center" style = "color:black;"><label>  
 			<%out.println(opt3);%>
-		</label>
-	</div>
-	<div class="radio" onclick="chkResponse(4,<%out.print(initialMin+","+initialSec); %>)">
-		<label> <input type="radio"
-			name="option4">
+		</label></h4>
+	</div><br>
+	<div id = "option4" class="form-control" style=" margin-left:400px;width : 40%;height:40px;" onclick="chkResponse(4,<%out.print(initialMin+","+initialSec+"," + ans); %>)">
+		<h4 align = "center" style = "color:black;"><label>  
 			<%out.println(opt4);%>
-		</label>
+		</label></h4>
 	</div>
 </div>
 <H3 id = "timer" ></H3>

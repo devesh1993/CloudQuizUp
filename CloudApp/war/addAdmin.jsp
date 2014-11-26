@@ -54,7 +54,7 @@
 	{
 		System.out.println("Admin Added..!!");
 		datastore.put(user);
-		response.sendRedirect("login.html");
+		response.sendRedirect("login.jsp");
 	}
 %>
 </html>
